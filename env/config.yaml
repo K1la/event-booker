@@ -1,0 +1,15 @@
+http_server:
+  address: ":8080"
+  timeout: 10
+  idle_timeout: 30
+
+postgres:
+  host: "db"
+  port: "5432"
+  user: "postgres"
+  name: "image-processor"
+  password: "" # set via .env DB_PASSWORD
+
+rabbitmq:
+  host: "rabbitmq"
+  port: ":5672"
