@@ -7,7 +7,7 @@ import (
 	"github.com/K1la/event-booker/internal/api/server"
 	"github.com/K1la/event-booker/internal/config"
 	"github.com/K1la/event-booker/internal/rabbitmq"
-	"github.com/K1la/event-booker/internal/repository/postgres"
+	"github.com/K1la/event-booker/internal/repository"
 	"github.com/K1la/event-booker/internal/sender"
 	"github.com/K1la/event-booker/internal/service"
 	"github.com/wb-go/wbf/zlog"
@@ -21,8 +21,8 @@ func main() {
 
 	cfg := config.Init()
 
-	db := postgres.NewDB(cfg)
-	repo := postgres.New(db)
+	db := repository.NewDB(cfg)
+	repo := repository.New(db)
 	rabmq := rabbitmq.New(cfg)
 	snder := sender.New()
 	srvc := service.New(repo, rabmq, snder)

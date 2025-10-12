@@ -1,16 +1,11 @@
-package postgres
+package repository
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/K1la/event-booker/internal/config"
 	"github.com/wb-go/wbf/dbpg"
 	"github.com/wb-go/wbf/zlog"
-)
-
-var (
-	ErrNoSuchImage = errors.New("there is no image with such id")
 )
 
 type Postgres struct {

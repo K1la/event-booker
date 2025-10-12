@@ -15,14 +15,15 @@ func New(handler *handler.Handler) *ginext.Engine {
 	e.Use(ginext.Recovery(), ginext.Logger())
 
 	// API routes
-	api := e.Group("/api/")
+	api := e.Group("/api/events")
 	{
-		api.POST("/events", handler.CreateEvent)
-		api.POST("/events/:id/book", handler.CreateBooking)
-		api.POST("/events/:id/confirm", handler.ConfirmPayment)
+		api.POST("", handler.CreateEvent)
+		api.POST("/:id/book", handler.CreateBooking)
+		api.POST("/:id/confirm", handler.ConfirmBookingPayment)
+		api.POST("/:id", handler.CancelBooking)
 
-		api.GET("/events", handler.GetAllEvents)
-		api.GET("/events/:id", handler.GetEvent)
+		api.GET("/:id", handler.GetEventByID)
+		api.GET("", handler.GetEvents)
 
 	}
 
