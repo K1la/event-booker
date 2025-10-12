@@ -9,7 +9,7 @@ import (
 
 type ServiceI interface {
 	CreateEvent(ctx context.Context, event *dto.CreateEvent) (*model.Event, error)
-	CreateBooking(ctx context.Context, booking *dto.CreateBooking) (uuid.UUID, error)
+	CreateBooking(ctx context.Context, booking *dto.CreateBooking) (*model.Booking, error)
 	ConfirmBookingPayment(ctx context.Context, bookingID uuid.UUID) error
 	CancelBooking(ctx context.Context, bookingID uuid.UUID) error
 
