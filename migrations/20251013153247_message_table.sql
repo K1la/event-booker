@@ -11,12 +11,12 @@ CREATE TABLE IF NOT EXISTS events(
 );
 
 CREATE TABLE IF NOT EXISTS bookings(
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    event_id    UUID REFERENCES events(id),
-    status      TEXT NOT NULL CHECK( status in ('pending', 'confirmed', 'cancelled')) DEFAULT 'pending',
-    telegram_id INT,
-    created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id     UUID REFERENCES events(id),
+    status       TEXT NOT NULL CHECK( status in ('pending', 'confirmed', 'cancelled')) DEFAULT 'pending',
+    telegram_id  INT,
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX idx_bookings_event_id ON bookings(event_id);

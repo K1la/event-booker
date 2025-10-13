@@ -11,6 +11,7 @@ import (
 
 var (
 	ErrNoSuchEvent                       = errors.New("there is no such event")
+	ErrNoSuchBooking                     = errors.New("there is no such booking")
 	ErrEventNotFound                     = errors.New("event not found")
 	ErrEventsNotFound                    = errors.New("events not found")
 	ErrBookingNotFoundOrAlreadyConfirmed = errors.New("booking not found or already confirmed")
@@ -21,6 +22,7 @@ var (
 const (
 	statusPending   = "pending"
 	StatusConfirmed = "confirmed"
+	statusCancelled = "cancelled"
 )
 
 type Postgres struct {

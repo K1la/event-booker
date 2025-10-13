@@ -37,10 +37,10 @@ func (r *Postgres) CreateBooking(ctx context.Context, booking *dto.CreateBooking
 	defer tx.Rollback()
 
 	var createdBooking model.Booking
-	query := `INSERT INTO bookings(event_id, status, telegram_id)
+	bookingsQuery := `INSERT INTO bookings(event_id, status, telegram_id)
 	VALUES ($1, $2, $3) RETURNING id, created_at`
 
-	err = tx.QueryRowContext(ctx, query, booking.EventID, statusPending, booking.TelegramID).Scan(
+	err = tx.QueryRowContext(ctx, bookingsQuery, booking.EventID, statusPending, booking.TelegramID).Scan(
 		&createdBooking.ID, &createdBooking.CreatedAt)
 	if err != nil {
 		var pgErr *pq.Error
@@ -51,10 +51,10 @@ func (r *Postgres) CreateBooking(ctx context.Context, booking *dto.CreateBooking
 		return nil, fmt.Errorf("failed to create booking: %w", err)
 	}
 
-	query = `UPDATE events
-	SET booked = booked + $1
-	WHERE id = $2 AND booked + $1 <= all_seats`
-	result, err := tx.ExecContext(ctx, query, booking.PlacesCount, booking.EventID)
+	EventsQuery := `UPDATE events
+	SET available_seats = available_seats - $1
+	WHERE id = $2 AND available_seats > 0`
+	result, err := tx.ExecContext(ctx, EventsQuery, booking.PlacesCount, booking.EventID) // booking.PlacesCount,
 	if err != nil {
 		return nil, fmt.Errorf("failed to update booking in event: %w", err)
 	}
@@ -75,7 +75,7 @@ func (r *Postgres) CreateBooking(ctx context.Context, booking *dto.CreateBooking
 	createdBooking.EventID = booking.EventID
 	createdBooking.TelegramID = booking.TelegramID
 	createdBooking.PlacesCount = booking.PlacesCount
-	createdBooking.Status = "created"
+	createdBooking.Status = statusPending
 
 	return &createdBooking, nil
 }

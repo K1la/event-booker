@@ -14,6 +14,6 @@ func (s *Service) GetEvents(ctx context.Context) ([]*model.Event, error) {
 	return s.db.GetEvents(ctx)
 }
 
-func (s *Service) GetBookingByID(ctx context.Context, eventID uuid.UUID) (*dto.Booking, error) {
-	return s.db.GetBookingByID(ctx, eventID)
+func (s *Service) GetBookingByID(ctx context.Context, id uuid.UUID) (*dto.Booking, error) {
+	return s.db.GetBookingByID(ctx, id)
 }

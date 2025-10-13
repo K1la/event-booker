@@ -5,16 +5,17 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/K1la/event-booker/internal/dto"
 	"github.com/google/uuid"
 )
 
 func (r *Postgres) ConfirmBookingPayment(ctx context.Context, bookingID uuid.UUID) error {
 	query := `UPDATE bookings
-	SET status = 'confirmed',
+	SET status = $1,
 	    updated_at = NOW()
-	WHERE id = $1`
+	WHERE id = $2`
 
-	err := r.db.QueryRowContext(ctx, query, bookingID).Scan()
+	err := r.db.QueryRowContext(ctx, query, StatusConfirmed, bookingID).Scan()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrBookingNotFoundOrAlreadyConfirmed
@@ -24,23 +25,23 @@ func (r *Postgres) ConfirmBookingPayment(ctx context.Context, bookingID uuid.UUI
 
 	return nil
 }
-func (r *Postgres) CancelBooking(ctx context.Context, bookingID uuid.UUID) error {
+func (r *Postgres) CancelBooking(ctx context.Context, booking *dto.QueueMessage) error {
 	tx, err := r.db.Master.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback()
 
-	cancelQuery := `
+	cancelBookingQuery := `
 		UPDATE bookings
-		SET status = 'cancelled',
+		SET status = $1,
 		    updated_at = NOW()
-		WHERE id = $1
+		WHERE id = $2
 		RETURNING event_id;
     `
 
 	var eventID uuid.UUID
-	err = tx.QueryRowContext(ctx, cancelQuery, bookingID).Scan(&eventID)
+	err = tx.QueryRowContext(ctx, cancelBookingQuery, statusCancelled, booking.BookingID).Scan(&eventID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrBookingNotFoundOrAlreadyCancelled
@@ -50,11 +51,11 @@ func (r *Postgres) CancelBooking(ctx context.Context, bookingID uuid.UUID) error
 
 	updateEventQuery := `
  		UPDATE events
-		SET available_seats = available_seats + 1,
+		SET available_seats = available_seats + $1,
 		    updated_at = NOW()
- 		WHERE id = $1;
+ 		WHERE id = $2;
 	`
-	_, err = tx.ExecContext(ctx, updateEventQuery, eventID)
+	_, err = tx.ExecContext(ctx, updateEventQuery, booking.PlacesCount, eventID)
 	if err != nil {
 		return fmt.Errorf("failed to update event seats: %w", err)
 	}

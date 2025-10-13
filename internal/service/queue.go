@@ -48,7 +48,7 @@ func (s *Service) handleQueueMessage(ctx context.Context, msgData []byte) error 
 		return nil
 	}
 
-	if err = s.db.DeleteBooking(ctx, msg); err != nil {
+	if err = s.db.CancelBooking(ctx, &msg); err != nil {
 		return err
 	}
 
