@@ -1,11 +1,26 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/K1la/event-booker/internal/config"
 	"github.com/wb-go/wbf/dbpg"
 	"github.com/wb-go/wbf/zlog"
+)
+
+var (
+	ErrNoSuchEvent                       = errors.New("there is no such event")
+	ErrEventNotFound                     = errors.New("event not found")
+	ErrEventsNotFound                    = errors.New("events not found")
+	ErrBookingNotFoundOrAlreadyConfirmed = errors.New("booking not found or already confirmed")
+	ErrBookingNotFoundOrAlreadyCancelled = errors.New("booking not found or already cancelled")
+	ErrNoSeatsAvailable                  = errors.New("no seats available")
+)
+
+const (
+	statusPending   = "pending"
+	StatusConfirmed = "confirmed"
 )
 
 type Postgres struct {

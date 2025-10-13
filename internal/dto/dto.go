@@ -8,10 +8,11 @@ import (
 type Booking struct {
 	ID         uuid.UUID `json:"id"`
 	EventID    uuid.UUID `json:"event_id"`
-	EventName  string    `json:"event_name"`
+	EventTitle string    `json:"event_title"`
 	TelegramID int       `json:"telegram_id"`
 	Status     string    `json:"status"`
 	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type QueueMessage struct {
@@ -20,9 +21,9 @@ type QueueMessage struct {
 }
 
 type CreateEvent struct {
-	EventName string    `json:"event_name"`
-	EventAt   time.Time `json:"event_at"`
-	AllSeats  int       `json:"all_seats"`
+	Title      string    `json:"title"`
+	EventAt    time.Time `json:"event_at"`
+	TotalSeats int       `json:"total_seats"`
 }
 
 type CreateBooking struct {
