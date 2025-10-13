@@ -9,13 +9,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *Postgres) ConfirmBookingPayment(ctx context.Context, bookingID uuid.UUID) error {
+func (r *Postgres) ConfirmBookingPayment(ctx context.Context, eventID uuid.UUID) error {
 	query := `UPDATE bookings
 	SET status = $1,
 	    updated_at = NOW()
-	WHERE id = $2`
+	WHERE event_id = $2`
 
-	err := r.db.QueryRowContext(ctx, query, StatusConfirmed, bookingID).Scan()
+	err := r.db.QueryRowContext(ctx, query, StatusConfirmed, eventID).Scan()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrBookingNotFoundOrAlreadyConfirmed

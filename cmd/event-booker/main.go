@@ -23,6 +23,7 @@ func main() {
 
 	db := repository.NewDB(cfg)
 	repo := repository.New(db)
+	zlog.Logger.Info().Interface("cfg rabbitmq", cfg.RabbitMQ).Msg("cfg rabbitmq in main")
 	rabmq := rabbitmq.New(cfg)
 	snder := sender.New()
 	srvc := service.New(repo, rabmq, snder)
@@ -39,7 +40,7 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// TODO: use queue in service
-	// srvc.StartWorker(ctx)
+	srvc.StartWorker(ctx)
 
 	go func() {
 		sig := <-sigChan

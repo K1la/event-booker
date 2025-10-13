@@ -12,12 +12,15 @@ import (
 
 // events/
 func (h *Handler) CreateEvent(c *ginext.Context) {
+	zlog.Logger.Info().Interface("req body", c.Request.Body).Msgf("create event")
+	zlog.Logger.Info().Interface("req", c.Request).Msgf("create event")
 	var createEvent dto.CreateEvent
 	if err := c.ShouldBindJSON(&createEvent); err != nil {
 		zlog.Logger.Error().Err(err).Msg("Bind json failed")
 		response.Internal(c, err)
 		return
 	}
+	zlog.Logger.Info().Interface("createEvent", createEvent).Msg("CreateEvent")
 
 	event, err := h.service.CreateEvent(c.Request.Context(), &createEvent)
 	if err != nil {
@@ -67,7 +70,7 @@ func (h *Handler) ConfirmBookingPayment(c *ginext.Context) {
 		response.BadRequest(c, err)
 		return
 	}
-
+	zlog.Logger.Info().Interface("eventID", eventID).Msg("ConfirmBookingPayment")
 	if err = h.service.ConfirmBookingPayment(c.Request.Context(), eventID); err != nil {
 		if errors.Is(err, repository.ErrBookingNotFoundOrAlreadyConfirmed) {
 			zlog.Logger.Error().Err(err).Msg("booking not found or already confirmed")
@@ -85,26 +88,26 @@ func (h *Handler) ConfirmBookingPayment(c *ginext.Context) {
 }
 
 // events/:id
-func (h *Handler) CancelBooking(c *ginext.Context) {
-	eventID, err := parseUUIDParam(c, "id")
-	if err != nil {
-		zlog.Logger.Error().Err(err).Msg("missing or invalid event id")
-		response.BadRequest(c, err)
-		return
-	}
-
-	if err = h.service.CancelBooking(c.Request.Context(), eventID); err != nil {
-		if errors.Is(err, repository.ErrBookingNotFoundOrAlreadyCancelled) {
-			zlog.Logger.Error().Err(err).Msg("booking not found or already canceled")
-			response.Fail(c, http.StatusNotFound, err)
-			return
-		}
-
-		zlog.Logger.Error().Err(err).Msg("Cancel booking failed")
-		response.Internal(c, err)
-		return
-	}
-
-	zlog.Logger.Info().Interface("eventID", eventID).Msg("Cancel booking success")
-	response.OK(c, ginext.H{"status": "booking successfully cancelled"})
-}
+//func (h *Handler) CancelBooking(c *ginext.Context) {
+//	eventID, err := parseUUIDParam(c, "id")
+//	if err != nil {
+//		zlog.Logger.Error().Err(err).Msg("missing or invalid event id")
+//		response.BadRequest(c, err)
+//		return
+//	}
+//
+//	if err = h.service.CancelBooking(c.Request.Context(), eventID); err != nil {
+//		if errors.Is(err, repository.ErrBookingNotFoundOrAlreadyCancelled) {
+//			zlog.Logger.Error().Err(err).Msg("booking not found or already canceled")
+//			response.Fail(c, http.StatusNotFound, err)
+//			return
+//		}
+//
+//		zlog.Logger.Error().Err(err).Msg("Cancel booking failed")
+//		response.Internal(c, err)
+//		return
+//	}
+//
+//	zlog.Logger.Info().Interface("eventID", eventID).Msg("Cancel booking success")
+//	response.OK(c, ginext.H{"status": "booking successfully cancelled"})
+//}

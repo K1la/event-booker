@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администрирование - Система бронирования мероприятий</title>
+    <link rel="stylesheet" href="/web/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app-container">
+            <div class="app-header">
+                <h1>⚙️ Панель администратора</h1>
+                <a href="/" class="back-link">← На главную</a>
+            </div>
+
+            <div class="app-content">
+                <!-- Создание мероприятия -->
+                <div class="form-section">
+                    <h2>Создать новое мероприятие</h2>
+                    <form id="createEventForm" onsubmit="event.preventDefault(); FormManager.createEvent();">
+                        <div class="form-group">
+                            <label for="eventTitle">Название мероприятия:</label>
+                            <input type="text" id="eventTitle" name="title" required 
+                                   placeholder="Например: Концерт классической музыки">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventAt">Дата и время:</label>
+                                <input type="datetime-local" id="eventAt" name="event_at" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="totalSeats">Количество мест:</label>
+                                <input type="number" id="totalSeats" name="total_seats" 
+                                       min="1" max="1000" required placeholder="100">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Создать мероприятие</button>
+                    </form>
+                </div>
+
+                <!-- Список мероприятий -->
+                <div class="form-section">
+                    <h2>Управление мероприятиями</h2>
+                    <div class="events-list" id="eventsList">
+                        <!-- События будут загружены динамически -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно отмены бронирования -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Отмена бронирования</h3>
+            <p>Вы уверены, что хотите отменить это бронирование?</p>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="DOMUtils.hideModal('cancelModal')">Отмена</button>
+                <button class="btn btn-danger" onclick="EventManager.cancelBooking()">Отменить бронь</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/web/api.js"></script>
+    <script>
+        // Инициализация страницы администратора
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузить список мероприятий с бронированиями
+            const eventsContainer = document.getElementById('eventsList');
+            EventManager.renderEvents(eventsContainer, true);
+            
+            // Установить текущую дату и время как минимальное значение
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('eventAt').min = now.toISOString().slice(0, 16);
+        });
+    </script>
+</body>
+</html>

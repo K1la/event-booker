@@ -48,7 +48,6 @@ func (r *Postgres) GetEvents(ctx context.Context) ([]*model.Event, error) {
 			'event_id', b.event_id,
 			'status', b.status,
 			'telegram_id', b.telegram_id,
-			'places_count', b.places_count,
 			'created_at', b.created_at,
 			'updated_at', b.updated_at
 			)) FILTER (WHERE b.id IS NOT NULL), '[]'

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пользователь - Система бронирования мероприятий</title>
+    <link rel="stylesheet" href="/web/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app-container">
+            <div class="app-header">
+                <h1>👤 Пользовательская панель</h1>
+                <a href="/" class="back-link">← На главную</a>
+            </div>
+
+            <div class="app-content">
+                <!-- Информация для пользователя -->
+                <div class="form-section">
+                    <h2>Добро пожаловать!</h2>
+                    <p>Здесь вы можете просматривать доступные мероприятия, бронировать места и подтверждать свои бронирования.</p>
+                    <div class="notification info">
+                        <strong>Важно:</strong> После бронирования у вас есть ограниченное время для подтверждения оплаты. 
+                        Неподтвержденные брони автоматически отменяются.
+                    </div>
+                </div>
+
+                <!-- Список мероприятий -->
+                <div class="form-section">
+                    <h2>Доступные мероприятия</h2>
+                    <div class="events-list" id="eventsList">
+                        <!-- События будут загружены динамически -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно бронирования -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Забронировать место</h3>
+            <form onsubmit="event.preventDefault(); EventManager.bookEvent();">
+                <input type="hidden" id="bookEventId">
+                
+                <div class="form-group">
+                    <label for="bookTelegramId">Ваш Telegram ID:</label>
+                    <input type="number" id="bookTelegramId" required 
+                           placeholder="Например: 123456789">
+                    <small style="color: #718096;">Введите ваш Telegram ID для связи</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookPlacesCount">Количество мест:</label>
+                    <input type="number" id="bookPlacesCount" min="1" max="10" required 
+                           placeholder="1">
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="DOMUtils.hideModal('bookModal')">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Забронировать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Подтвердить бронирование</h3>
+            <p>Для подтверждения бронирования введите ID мероприятия:</p>
+            <form onsubmit="event.preventDefault(); EventManager.confirmBooking();">
+                <input type="hidden" id="confirmEventId">
+                
+                <div class="form-group">
+                    <label for="confirmEventIdInput">ID мероприятия:</label>
+                    <input type="text" id="confirmEventIdInput" required 
+                           placeholder="Введите ID мероприятия">
+                </div>
+                
+                <div class="notification info">
+                    <strong>Примечание:</strong> ID мероприятия можно найти в карточке мероприятия выше.
+                </div>
+                
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="DOMUtils.hideModal('confirmModal')">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Подтвердить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/web/api.js"></script>
+    <script>
+        // Инициализация пользовательской страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузить список мероприятий
+            const eventsContainer = document.getElementById('eventsList');
+            EventManager.renderEvents(eventsContainer, false);
+            
+            // Обновлять список каждые 30 секунд для отслеживания изменений
+            setInterval(() => {
+                EventManager.renderEvents(eventsContainer, false);
+            }, 30000);
+        });
+
+        // Переопределяем функцию показа модального окна подтверждения для пользователя
+        const originalShowConfirmModal = EventManager.showConfirmModal;
+        EventManager.showConfirmModal = function(eventId) {
+            document.getElementById('confirmEventId').value = eventId;
+            document.getElementById('confirmEventIdInput').value = eventId;
+            DOMUtils.showModal('confirmModal');
+        };
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS events(
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title           TEXT NOT NULL,
     total_seats     INT NOT NULL,
-    available_seats INT NOT NULL DEFAULT 0,
+    available_seats INT NOT NULL,
     event_at        TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()

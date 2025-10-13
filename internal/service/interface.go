@@ -10,7 +10,7 @@ import (
 type DBRepo interface {
 	CreateEvent(ctx context.Context, event *dto.CreateEvent) (*model.Event, error)
 	CreateBooking(ctx context.Context, booking *dto.CreateBooking) (*model.Booking, error)
-	ConfirmBookingPayment(ctx context.Context, bookingID uuid.UUID) error
+	ConfirmBookingPayment(ctx context.Context, eventID uuid.UUID) error
 	CancelBooking(ctx context.Context, booking *dto.QueueMessage) error
 
 	//DeleteBooking(ctx context.Context, msg dto.QueueMessage) error

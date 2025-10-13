@@ -11,12 +11,12 @@ import (
 
 func (r *Postgres) CreateEvent(ctx context.Context, event *dto.CreateEvent) (*model.Event, error) {
 	query := `
-	INSERT INTO events(title, event_at, total_seats)
-	VALUES ($1, $2, $3) RETURNING id, created_at
+	INSERT INTO events(title, event_at, total_seats, available_seats)
+	VALUES ($1, $2, $3, $4) RETURNING id, created_at
 	`
 
 	var createdEvent model.Event
-	err := r.db.QueryRowContext(ctx, query, event.Title, event.EventAt, event.TotalSeats).Scan(
+	err := r.db.QueryRowContext(ctx, query, event.Title, event.EventAt, event.TotalSeats, event.TotalSeats).Scan(
 		&createdEvent.ID, &createdEvent.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create event in db: %w", err)
@@ -25,6 +25,7 @@ func (r *Postgres) CreateEvent(ctx context.Context, event *dto.CreateEvent) (*mo
 	createdEvent.EventAt = event.EventAt
 	createdEvent.Title = event.Title
 	createdEvent.TotalSeats = event.TotalSeats
+	createdEvent.AvailableSeats = event.TotalSeats
 
 	return &createdEvent, nil
 }
@@ -53,7 +54,7 @@ func (r *Postgres) CreateBooking(ctx context.Context, booking *dto.CreateBooking
 
 	EventsQuery := `UPDATE events
 	SET available_seats = available_seats - $1
-	WHERE id = $2 AND available_seats > 0`
+	WHERE id = $2 AND available_seats >= 0`
 	result, err := tx.ExecContext(ctx, EventsQuery, booking.PlacesCount, booking.EventID) // booking.PlacesCount,
 	if err != nil {
 		return nil, fmt.Errorf("failed to update booking in event: %w", err)

@@ -12,15 +12,17 @@ import (
 func (s *Service) StartWorker(ctx context.Context) {
 	zlog.Logger.Info().Msg("started worker to cancel not paid bookings")
 	go func() {
-		s.consumeMessages(ctx)
+		if err := s.consumeMessages(ctx); err != nil {
+			zlog.Logger.Error().Err(err).Msg("failed to start queue worker")
+		}
 	}()
 }
 
-func (s *Service) consumeMessages(ctx context.Context) {
+func (s *Service) consumeMessages(ctx context.Context) error {
 	msgs, err := s.rbmq.Consume(ctx)
 	if err != nil {
 		zlog.Logger.Error().Err(err).Msg("failed to consume messages from queue")
-		return
+		return err
 	}
 
 	for msg := range msgs {
@@ -30,6 +32,7 @@ func (s *Service) consumeMessages(ctx context.Context) {
 		}
 		zlog.Logger.Info().Msgf("processed message from queue")
 	}
+	return nil
 }
 
 func (s *Service) handleQueueMessage(ctx context.Context, msgData []byte) error {

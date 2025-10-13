@@ -7,7 +7,7 @@ postgres:
   host: "db"
   port: "5432"
   user: "postgres"
-  name: "image-processor"
+  name: "event-booker"
   password: "" # set via .env DB_PASSWORD
 
 rabbitmq:
