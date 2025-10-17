@@ -87,27 +87,3 @@ func (h *Handler) ConfirmBookingPayment(c *ginext.Context) {
 	response.OK(c, ginext.H{"status": "payment confirmed"})
 }
 
-// events/:id
-//func (h *Handler) CancelBooking(c *ginext.Context) {
-//	eventID, err := parseUUIDParam(c, "id")
-//	if err != nil {
-//		zlog.Logger.Error().Err(err).Msg("missing or invalid event id")
-//		response.BadRequest(c, err)
-//		return
-//	}
-//
-//	if err = h.service.CancelBooking(c.Request.Context(), eventID); err != nil {
-//		if errors.Is(err, repository.ErrBookingNotFoundOrAlreadyCancelled) {
-//			zlog.Logger.Error().Err(err).Msg("booking not found or already canceled")
-//			response.Fail(c, http.StatusNotFound, err)
-//			return
-//		}
-//
-//		zlog.Logger.Error().Err(err).Msg("Cancel booking failed")
-//		response.Internal(c, err)
-//		return
-//	}
-//
-//	zlog.Logger.Info().Interface("eventID", eventID).Msg("Cancel booking success")
-//	response.OK(c, ginext.H{"status": "booking successfully cancelled"})
-//}
