@@ -42,6 +42,7 @@ func (h *Handler) GetEvents(c *ginext.Context) {
 		if errors.Is(err, repository.ErrEventsNotFound) {
 			zlog.Logger.Error().Err(err).Msg("events not found")
 			response.Fail(c, http.StatusNotFound, err)
+			return
 		}
 
 		zlog.Logger.Error().Err(err).Msg("could not get all events")

@@ -1,48 +1,13 @@
 package router
 
 import (
+	"github.com/K1la/event-booker/internal/api/handler"
 	"net/http"
 	"path/filepath"
 	"strings"
-	"time"
-
-	"github.com/K1la/event-booker/internal/api/handler"
 
 	"github.com/wb-go/wbf/ginext"
-	"github.com/wb-go/wbf/zlog"
 )
-
-// customLoggerMiddleware логирует HTTP запросы с использованием zlog
-func customLoggerMiddleware() ginext.HandlerFunc {
-	return func(c *ginext.Context) {
-		start := time.Now()
-		path := c.Request.URL.Path
-		raw := c.Request.URL.RawQuery
-
-		// Обрабатываем запрос
-		c.Next()
-
-		// Логируем после обработки
-		latency := time.Since(start)
-		clientIP := c.ClientIP()
-		method := c.Request.Method
-		statusCode := c.Writer.Status()
-		bodySize := c.Writer.Size()
-
-		if raw != "" {
-			path = path + "?" + raw
-		}
-
-		zlog.Logger.Info().
-			Str("method", method).
-			Str("path", path).
-			Int("status", statusCode).
-			Str("ip", clientIP).
-			Dur("latency", latency).
-			Int("size", bodySize).
-			Msg("HTTP Request")
-	}
-}
 
 func New(handler *handler.Handler) *ginext.Engine {
 	e := ginext.New("")
